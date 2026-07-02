@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>花纹设计屋</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", "黑体", sans-serif;
+        }
+
+        /* 页面主背景改为暖米色 */
+        body {
+            background: #fff8e6;
+            padding: 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #e67e22; /* 标题改为暖橙色 */
+            margin-bottom: 25px;
+        }
+
+        .pinyin {
+            font-size: 12px;
+            color: #888;
+            display: block;
+        }
+
+        .container {
+            display: flex;
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        .material-box {
+            width: 260px;
+            flex-shrink: 0;
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(245, 180, 120, 0.15); /* 暖色调阴影 */
+        }
+
+        .material-box h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #9d5025; /* 暖棕色调 */
+            text-align: center;
+        }
+
+        .pattern-item {
+            width: 50px;
+            height: 50px;
+            margin: 4px;
+            cursor: grab;
+            border-radius: 8px;
+            border: 2px solid #fff8e6; /* 适配暖米色调整边框色 */
+            background: #fff3e0; /* 暖色系背景 */
+        }
+
+        .pattern-item:active {
+            cursor: grabbing;
+            border-color: #ffcc80; /* 适配暖色调整激活边框色 */
+        }
+
+        .tool-bar {
+            margin: 12px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 7px 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f59e0b; /* 暖黄色按钮 */
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button.active {
+            background: #d97706; /* 深暖黄激活色 */
+            font-weight: bold;
+        }
+
+        .btn-move { background: #ec4899; } /* 暖粉 */
+        .btn-move.active { background: #be185d; }
+        .btn-undo { background: #10b981; } /* 暖绿 */
+        .btn-clear { background: #ef4444; } /* 暖红 */
+        .btn-draw { background: #6366f1; } /* 浅紫（中和暖色） */
+
+        .canvas-wrap {
+            flex: 1;
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(245, 180, 120, 0.15); /* 暖色调阴影 */
+        }
+
+        .canvas-wrap h3 {
+            text-align: center;
+            font-size: 16px;
+            color: #9d5025; /* 暖棕色调 */
+            margin-bottom: 10px;
+        }
+
+        /* 画布背景改为暖奶油色 */
+        #mainCanvas {
+            border: 3px dashed #ffcc80; /* 适配暖色调整虚线边框 */
+            background: #fff3e0;
+            border-radius: 12px;
+            width: 100%;
+        }
+
+        .tip {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #777;
+            line-height: 1.5;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-title">
+        <span class="pinyin">huā wén shè jì wū</span>
+        花纹设计屋
+    </div>
+
+    <div class="container">
+        <div class="material-box">
+            <h3>
+                📦 可用图案（拖动到画布）
+            </h3>
+
+            <img class="pattern-item" draggable="true" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Ccircle cx='25' cy='25' r='20' fill='%23f39c12'/%3E%3C/svg%3E" alt="圆形">
+            <img class="pattern-item" draggable="true" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cpolygon points='25,5 45,40 5,40' fill='%239b59b6'/%3E%3C/svg%3E" alt="三角形">
+            <img class="pattern-item" draggable="true" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Crect x='8' y='8' width='34' height='34' fill='%233498db'/%3E%3C/svg%3E" alt="方形">
+            <img class="pattern-item" draggable="true" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cpath d='M25,5 L30,20 L45,20 L33,30 L38,45 L25,35 L12,45 L17,30 L5,20 L20,20 Z' fill='%23e67e22'/%3E%3C/svg%3E" alt="五角星">
+            <img class="pattern-item" draggable="true" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cpath d='M25,5 C35,20 45,25 25,45 C5,25 15,20 25,5' fill='%232ecc71'/%3E%3C/svg%3E" alt="爱心">
+            <img class="pattern-item" draggable="true" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cpath d='M25 8 C35 15 40 30 25 42 C10 30 15 15 25 8 Z' fill='%23e74c3c'/%3E%3Crect x='23' y='40' width='4' height='8' fill='%23d35400'/%3E%3C/svg%3E" alt="火炬">
+
+            <div class="tool-bar">
+                <button id="btnCopy">复制选中</button>
+                <button id="btnPaste">粘贴</button>
+                <button id="btnMove" class="btn-move">移动图案</button>
+                <button id="btnScaleUp">放大</button>
+                <button id="btnScaleDown">缩小</button>
+                <button id="btnRotate">旋转</button>
+                <button id="btnUndo" class="btn-undo">撤销</button>
+            </div>
+
+            <div class="tool-bar">
+                <button class="btn-draw" id="btnDraw">自由绘画</button>
+                <button class="btn-clear" id="btnClear">清空画布</button>
+            </div>
+
+            <div class="tip">
+                <p>操作说明：</p>
+                <p>1. 拖动左侧图案到画布拼摆</p>
+                <p>2. 点击图案选中</p>
+                <p>3. 移动按钮可随时取消</p>
+                <p>4. 开启绘画自主创作</p>
+            </div>
+        </div>
+
+        <div class="canvas-wrap">
+            <h3>
+                🎨 创作画布（花纹设计区域）
+            </h3>
+            <canvas id="mainCanvas" width="600" height="500"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDraw = false;
+        let isMove = false;
+        let drawStart = false;
+        let moveStart = false;
+        let lastX = 0, lastY = 0;
+        let moveOffsetX = 0, moveOffsetY = 0;
+        let patterns = [];
+        let history = [];
+        let selectIdx = -1;
+        let copyPattern = null;
+
+        // 绘画缓存（永久保存笔迹）
+        let drawingCanvas = document.createElement('canvas');
+        let drawingCtx = drawingCanvas.getContext('2d');
+        drawingCanvas.width = canvas.width;
+        drawingCanvas.height = canvas.height;
+
+        const btnMove = document.getElementById('btnMove');
+        const btnDraw = document.getElementById('btnDraw');
+
+        // 初始化绘制绘画层（同步改为暖色背景）
+        function initDrawingCache() {
+            drawingCtx.fillStyle = '#fff3e0';
+            drawingCtx.fillRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        }
+        initDrawingCache();
+
+        function saveHistory() {
+            history.push(JSON.stringify(patterns));
+            if (history.length > 20) history.shift();
+        }
+
+        document.getElementById('btnUndo').addEventListener('click', () => {
+            if (history.length === 0) {
+                alert('已经是第一步啦！');
+                return;
+            }
+            patterns = JSON.parse(history.pop());
+            render();
+        });
+
+        const materialImgs = document.querySelectorAll('.pattern-item');
+        materialImgs.forEach(img => {
+            img.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('imgSrc', img.src);
+            });
+        });
+
+        canvas.addEventListener('dragover', e => e.preventDefault());
+        canvas.addEventListener('drop', e => {
+            e.preventDefault();
+            const src = e.dataTransfer.getData('imgSrc');
+            if (!src) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                saveHistory();
+                patterns.push({ img: img.src, x: x - 25, y: y - 25, w: 50, h: 50, rot: 0 });
+                render();
+            };
+        });
+
+        canvas.addEventListener('mousedown', e => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (isMove && selectIdx >= 0) {
+                moveStart = true;
+                moveOffsetX = x - patterns[selectIdx].x;
+                moveOffsetY = y - patterns[selectIdx].y;
+                return;
+            }
+
+            selectIdx = -1;
+            for (let i = patterns.length - 1; i >= 0; i--) {
+                const p = patterns[i];
+                if (x >= p.x && x <= p.x + p.w && y >= p.y && y <= p.y + p.h) {
+                    selectIdx = i;
+                    break;
+                }
+            }
+
+            if (isDraw) {
+                drawStart = true;
+                lastX = x;
+                lastY = y;
+            }
+            render();
+        });
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (isMove && moveStart && selectIdx >= 0) {
+                patterns[selectIdx].x = x - moveOffsetX;
+                patterns[selectIdx].y = y - moveOffsetY;
+                render();
+                return;
+            }
+
+            if (!isDraw || !drawStart) return;
+
+            // 永久绘画，不会消失
+            drawingCtx.beginPath();
+            drawingCtx.moveTo(lastX, lastY);
+            drawingCtx.lineTo(x, y);
+            drawingCtx.lineWidth = 3;
+            drawingCtx.strokeStyle = '#444';
+            drawingCtx.lineCap = 'round';
+            drawingCtx.stroke();
+
+            lastX = x;
+            lastY = y;
+            render();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawStart = false;
+            moveStart = false;
+        });
+        canvas.addEventListener('mouseleave', () => {
+            drawStart = false;
+            moveStart = false;
+        });
+
+        btnMove.addEventListener('click', function () {
+            isMove = !isMove;
+            isDraw = false;
+            btnDraw.innerText = '自由绘画';
+            btnDraw.classList.remove('active');
+            
+            if (isMove) {
+                this.innerText = '关闭移动';
+                this.classList.add('active');
+                canvas.style.cursor = 'move';
+            } else {
+                this.innerText = '移动图案';
+                this.classList.remove('active');
+                canvas.style.cursor = 'default';
+            }
+            render();
+        });
+
+        btnDraw.addEventListener('click', function () {
+            isDraw = !isDraw;
+            isMove = false;
+            btnMove.innerText = '移动图案';
+            btnMove.classList.remove('active');
+
+            if (isDraw) {
+                this.innerText = '关闭绘画';
+                this.classList.add('active');
+                canvas.style.cursor = 'crosshair';
+            } else {
+                this.innerText = '自由绘画';
+                this.classList.remove('active');
+                canvas.style.cursor = 'default';
+            }
+            render();
+        });
+
+        document.getElementById('btnCopy').addEventListener('click', () => {
+            if (selectIdx >= 0) {
+                copyPattern = { ...patterns[selectIdx] };
+                alert('已复制！');
+            } else alert('请先选中图案');
+        });
+
+        document.getElementById('btnPaste').addEventListener('click', () => {
+            if (!copyPattern) {
+                alert('请先复制');
+                return;
+            }
+            saveHistory();
+            patterns.push({
+                ...copyPattern,
+                x: copyPattern.x + 20,
+                y: copyPattern.y + 20
+            });
+            render();
+        });
+
+        document.getElementById('btnScaleUp').addEventListener('click', () => {
+            if (selectIdx < 0) { alert('请先选中'); return; }
+            saveHistory();
+            let p = patterns[selectIdx];
+            p.w += 10; p.h += 10;
+            render();
+        });
+
+        document.getElementById('btnScaleDown').addEventListener('click', () => {
+            if (selectIdx < 0) { alert('请先选中'); return; }
+            saveHistory();
+            let p = patterns[selectIdx];
+            if (p.w > 20) { p.w -= 10; p.h -= 10; }
+            render();
+        });
+
+        document.getElementById('btnRotate').addEventListener('click', () => {
+            if (selectIdx < 0) { alert('请先选中'); return; }
+            saveHistory();
+            let p = patterns[selectIdx];
+            p.rot = (p.rot || 0) + 45;
+            render();
+        });
+
+        document.getElementById('btnClear').addEventListener('click', () => {
+            if (confirm('确定清空？')) {
+                saveHistory();
+                patterns = []; selectIdx = -1; copyPattern = null;
+                initDrawingCache();
+                render();
+            }
+        });
+
+        // 渲染：先画笔迹，再画图案
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(drawingCanvas, 0, 0);
+
+            patterns.forEach((p, idx) => {
+                const img = new Image();
+                img.src = p.img;
+                ctx.save();
+                let cx = p.x + p.w / 2;
+                let cy = p.y + p.h / 2;
+                ctx.translate(cx, cy);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.drawImage(img, -p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+
+                if (idx === selectIdx) {
+                    ctx.strokeStyle = '#f16b9f';
+                    ctx.setLineDash([5, 4]);
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(p.x, p.y, p.w, p.h);
+                    ctx.setLineDash([]);
+                }
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>
